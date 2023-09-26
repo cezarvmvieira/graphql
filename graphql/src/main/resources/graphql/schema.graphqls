@@ -1,0 +1,50 @@
+input ClienteInputDTO {
+  nome: String!
+  cpf: String!
+  rua: String!
+  bairro: String!
+  cidade: String!
+  estado: String!
+  cep: String!
+  numero: Int!
+  tipo: String!
+  valor: String!
+}
+type Endereco{
+    enderecoId: ID!
+    rua: String!
+    bairro: String!
+    cidade: String!
+    estado: String!
+    cep: String!
+    numero: Int!
+}
+type Contato{
+    contatoId: ID!
+    tipo: String!
+    valor: String!
+}
+type Cliente{
+    clienteId: ID!
+    nome: String!
+    cpf: String!
+    endereco: Endereco!
+    contato: Contato!
+}
+type Conta{
+  numero: Int!
+  saldo: Float!
+  tipo: String!
+  clienteId: ID!
+}
+type Mutation {
+  cadastrarCliente(cliente: ClienteInputDTO!): [Cliente]
+  removerCliente(id: ID!): [Cliente]
+  updateCliente(id: ID!, cliente: ClienteInputDTO!): [Cliente]
+  cadastrarConta(tipo: String!, clienteId: ID!): [Conta]
+  depositarConta(numero: Int!, valor: Float!): Conta
+  sacarConta(numero: Int!, valor: Float!): Conta
+}
+type Query{
+    clienteById(id: ID!): Cliente
+}
