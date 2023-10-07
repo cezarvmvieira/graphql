@@ -1,7 +1,5 @@
 package br.unesp.rc.graphql.model;
 
-import java.util.Date;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,14 +8,14 @@ import lombok.ToString;
 @Setter
 @ToString
 public class Historico {
-    private Date dataCompra;
     private String itemComprado;
     private float valor;
 
-    public Historico(Date dataCompra, String itemComprado, float valor) {
-        this.dataCompra = dataCompra;
+
+    public Historico(String itemComprado, float valor) {
         this.itemComprado = itemComprado;
         this.valor = valor;
     }
+    
 
 }

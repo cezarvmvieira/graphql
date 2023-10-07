@@ -10,13 +10,12 @@ import lombok.ToString;
 @Setter
 @ToString
 public class CartaoDTO {
-    private Date dataValidade;
     private String tipo;
     private String senha;
     private String numeroDeSeguranca;
 
-    public CartaoDTO(Date dataValidade, String tipo, String senha, String numeroDeSeguranca) {
-        this.dataValidade = dataValidade;
+
+    public CartaoDTO(String tipo, String senha, String numeroDeSeguranca) {
         this.tipo = tipo;
         this.senha = senha;
         this.numeroDeSeguranca = numeroDeSeguranca;

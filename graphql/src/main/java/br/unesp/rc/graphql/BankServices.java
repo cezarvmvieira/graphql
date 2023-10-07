@@ -26,33 +26,40 @@ class ClienteService {
     Map<String, Endereco> enderecos = new HashMap<>();
     Map<String, Contato> contatos = new HashMap<>();
 
-    Collection<Cliente> cadastrarClientes(ClienteDTO cliente) {
+    Collection<Cliente> findAllCLientes(){
+        List<Cliente> clientesCadastrados = new ArrayList<>();
+        clientes.values().forEach(value->{
+            clientesCadastrados.add(value);
+        });
+        return clientesCadastrados;
+    }
+    
+    Cliente cadastrarClientes(ClienteDTO cliente) {
         Endereco endereco = new Endereco(UUID.randomUUID().toString(), cliente.getRua(), cliente.getBairro(),
                 cliente.getCidade(), cliente.getEstado(), cliente.getCep(), cliente.getNumero());
         Contato contato = new Contato(UUID.randomUUID().toString(), cliente.getTipo(), cliente.getValor());
         var newCLiente = new Cliente(UUID.randomUUID().toString(), cliente.getNome(), cliente.getCpf(), endereco,
                 contato);
         clientes.put(newCLiente.getClienteId(), newCLiente);
-        return clientes.values();
+        return newCLiente;
     }
 
     Cliente clienteById(String id) {
         return clientes.get(id);
     }
 
-    Collection<Cliente> removeClienteById(String id) {
+    void removeClienteById(String id) {
         clientes.remove(id);
-        return clientes.values();
     }
 
-    Collection<Cliente> updateClienteById(String id, ClienteDTO cliente) {
+    Cliente updateClienteById(String id, ClienteDTO cliente) {
         Endereco endereco = new Endereco(clientes.get(id).getEndereco().getEnderecoId(), cliente.getRua(),
                 cliente.getBairro(), cliente.getCidade(), cliente.getEstado(), cliente.getCep(), cliente.getNumero());
         Contato contato = new Contato(clientes.get(id).getContato().getContatoId(), cliente.getTipo(),
                 cliente.getValor());
         var newCLiente = new Cliente(id, cliente.getNome(), cliente.getCpf(), endereco, contato);
         clientes.put(id, newCLiente);
-        return clientes.values();
+        return newCLiente;
     }
 
     Cliente updateClienteById(Cliente cliente) {
@@ -78,11 +85,11 @@ class ContaService {
     @Autowired
     ClienteService clienteService;
 
-    Collection<Conta> cadastrarConta(String tipo, String clienteId) {
+    Conta cadastrarConta(String tipo, String clienteId) {
         Conta conta = new Conta(contas.size() + 1, 0, tipo);
         if (clienteService.associarConta(clienteId, conta.getNumero()) != null) {
             contas.put(conta.getNumero(), conta);
-            return contas.values();
+            return conta;
         }
         return null;
     }
@@ -129,7 +136,7 @@ class CartaoService {
         Cartao cartao = null;
         if (cliente != null) {
             List<String> cartoesCliente = cliente.getCartoes();
-            cartao = new Cartao(dto.getDataValidade(), dto.getTipo(), dto.getSenha(), dto.getNumeroDeSeguranca());
+            cartao = new Cartao(dto.getTipo(), dto.getSenha(), dto.getNumeroDeSeguranca());
             cartao.setLimite(limite);
             cartoesCliente.add(cartao.getNumero());
             /* associando cartão ao cliente */
@@ -146,7 +153,7 @@ class CartaoService {
         Cartao cartao = null;
         if (cliente != null) {
             List<String> cartoesCliente = cliente.getCartoes();
-            cartao = new Cartao(dto.getDataValidade(), dto.getTipo(), dto.getSenha(), dto.getNumeroDeSeguranca());
+            cartao = new Cartao(dto.getTipo(), dto.getSenha(), dto.getNumeroDeSeguranca());
             /* associando cartão a conta */
             cartao.setNumeroConta(numeroConta);
             cartoesCliente.add(cartao.getNumero());
@@ -158,9 +165,15 @@ class CartaoService {
         return cartao;
     }
 
+    List<Cartao> findCartaoCliente(String clienteId){
+        Cliente cliente = clienteService.clienteById(clienteId);
+        List<Cartao> cartoesCliente = new ArrayList<>();
+        cliente.getCartoes().forEach(numeroCartao->{cartoesCliente.add(cartoes.get(numeroCartao));});
+        System.out.println(cartoesCliente);
+        return cartoesCliente;
+    }
     void pagarOnlineCartao(String numeroDeSeguranca, String numeroCartao, String produto, float valor) {
-        Date dataCompra = new Date();
-        Historico historico = new Historico(dataCompra, produto, valor);
+        Historico historico = new Historico(produto, valor);
         Cartao cartao = cartoes.get(numeroCartao);
         List<Historico> historicos = cartao.getHistorico();
         historicos.add(historico);
@@ -174,6 +187,7 @@ class CartaoService {
                     break;
             }
         cartao.setHistorico(historicos);
+        System.out.println(historico);
     }
 
     List<Historico> gerarExtrato(String numeroCartao){

@@ -10,6 +10,11 @@ input ClienteInputDTO {
   tipo: String!
   valor: String!
 }
+input CartaoDTO{
+  tipo: String!
+  senha: String!
+  numeroDeSeguranca: String!
+}
 type Endereco{
     enderecoId: ID!
     rua: String!
@@ -37,14 +42,36 @@ type Conta{
   tipo: String!
   clienteId: ID!
 }
+
+type Historico{
+  itemComprado: String!
+  valor: Float!
+}
+
+type Cartao{
+  numero: String!
+  numeroConta: Int!
+  senha: String!
+  numeroDeSeguranca: String!
+  tipo: String!
+  limite: Float 
+}
+
 type Mutation {
-  cadastrarCliente(cliente: ClienteInputDTO!): [Cliente]
-  removerCliente(id: ID!): [Cliente]
-  updateCliente(id: ID!, cliente: ClienteInputDTO!): [Cliente]
-  cadastrarConta(tipo: String!, clienteId: ID!): [Conta]
+  cadastrarCliente(cliente: ClienteInputDTO!): Cliente
+  removerCliente(id: ID!): Boolean
+  updateCliente(id: ID!, cliente: ClienteInputDTO!): Cliente
+  cadastrarConta(tipo: String!, clienteId: ID!): Conta
   depositarConta(numero: Int!, valor: Float!): Conta
   sacarConta(numero: Int!, valor: Float!): Conta
+  cadastrarCartaoDebito(cartao: CartaoDTO!, clienteId: ID!, numeroConta: Int!): Cartao
+  cadastrarCartaoCredito(cartao: CartaoDTO!, clienteId: ID!, valor: Float!): Cartao
+  pagarOnlineCartao(numeroDeSeguranca: String!, numeroCartao: String!, produto: String!, valor: Float!): Boolean
 }
 type Query{
     clienteById(id: ID!): Cliente
+    findAllCliente:[Cliente]
+    findContaCliente(id: ID!):[Conta]
+    gerarExtrato(numeroCartao: String!): [Historico]
+    findCartaoCliente(clienteId: String!): [Cartao]
 }
